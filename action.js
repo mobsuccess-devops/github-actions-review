@@ -98,6 +98,8 @@ exports.action = async function action() {
 
 async function actionIssue() {
   console.info(`Calling action on issue`);
+  console.log(github.context);
+  return;
   const { owner, repo, issueNumber, pullRequest } = await getActionParameters();
 
   const workflowRuns = await octokit.paginate(
@@ -124,12 +126,18 @@ async function actionIssue() {
         ? 1
         : 0
   );
-  console.log(
-    "DEBUG SORTED RUNS",
-    reviewWorkflows.map(({ run_started_at }) => run_started_at)
-  );
   const latestRun = reviewWorkflows[0];
-  console.log("DEBUG LATEST RUN", latestRun);
+  const { id: runId } = latestRun;
+  console.log(`Triggering re-run on ${runId}`);
+
+  await octokit.request(
+    "POST /repos/{owner}/{repo}/actions/runs/{run_id}/rerun",
+    {
+      owner,
+      repo,
+      run_id: runId,
+    }
+  );
 }
 
 async function actionPullRequest() {
