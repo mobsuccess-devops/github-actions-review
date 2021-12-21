@@ -4,7 +4,6 @@ const getOctokit = require("./lib/actions/octokit");
 const octokit = getOctokit();
 
 async function getActionParameters() {
-  console.log("Debug context", github.context);
   if (
     github.context &&
     github.context.payload &&
@@ -21,9 +20,6 @@ async function getActionParameters() {
       },
     } = github.context.payload;
     console.log(`Found issue ${issueNumber} for ${owner}/${repo}`);
-    console.log("DEBUG A", octokit);
-    console.log("DEBUG C", octokit.pulls);
-    console.log("DEBUG D", octokit.pulls.get);
     const pullRequest = (
       await octokit.pulls.get({
         owner,
@@ -88,9 +84,8 @@ const getHasRequestedReview = (exports.getHasRequestedReview = (comments) =>
   ));
 
 exports.action = async function action() {
-  console.info(`Calling action ${action}`);
+  console.info(`Calling action`);
   const { pullRequest } = await getActionParameters();
-  console.log("DEBUG PR", pullRequest);
 
   const author = getPullAuthor(pullRequest);
   const pullNumber = getPullNumber(pullRequest);
@@ -98,21 +93,11 @@ exports.action = async function action() {
   const { baseRef, owner, repo } = getPullBase(pullRequest);
   const requestedReviewers = getPullRequestedReviewers(pullRequest);
 
-  console.log("DEBUG PR INFO", {
-    author,
-    pullNumber,
-    draft,
-    baseRef,
-    requestedReviewers,
-  });
-
   const comments = await octokit.paginate(
     "GET /repos/{owner}/{repo}/issues/{issue_number}/comments",
     { owner, repo, issue_number: pullNumber }
   );
-  console.log("DEBUG COMMENTS", comments);
   const hasRequestedReview = getHasRequestedReview(comments);
-  console.log("DEBUG HAS REQUESTED REVIEW", hasRequestedReview);
 
   if (author === "ms-bot") {
     console.log(
