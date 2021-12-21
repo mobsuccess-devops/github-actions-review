@@ -21,11 +21,17 @@ async function getActionParameters() {
       },
     } = github.context.payload;
     console.log(`Found issue ${issueNumber} for ${owner}/${repo}`);
-    const pullRequest = await octokit.rest.pulls.get({
-      owner,
-      repo,
-      pull_number: issueNumber,
-    });
+    console.log("DEBUG A", octokit);
+    console.log("DEBUG B", octokit.rest);
+    console.log("DEBUG C", octokit.rest.pulls);
+    console.log("DEBUG D", octokit.rest.pulls.get);
+    const pullRequest = (
+      await octokit.rest.pulls.get({
+        owner,
+        repo,
+        pull_number: issueNumber,
+      })
+    ).data;
     console.log("Got pull request", pullRequest);
     return { pullRequest };
   } else {
