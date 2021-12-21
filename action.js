@@ -10,6 +10,13 @@ exports.getActionParameters = function getActionParameters() {
   };
 };
 
+const getPullAuthor = (exports.getPullAuthor = (pullRequest) => {
+  const {
+    user: { login },
+  } = pullRequest;
+  return login;
+});
+
 const getPullDraft = (exports.getPullDraft = (pullRequest) => {
   const { draft } = pullRequest;
   return draft;
@@ -52,12 +59,14 @@ exports.action = async function action() {
   const { pullRequest } = exports.getActionParameters();
   console.log("DEBUG PR", pullRequest);
 
+  const author = getPullAuthor(pullRequest);
   const pullNumber = getPullNumber(pullRequest);
   const draft = getPullDraft(pullRequest);
   const { baseRef, owner, repo } = getPullBase(pullRequest);
   const requestedReviewers = getPullRequestedReviewers(pullRequest);
 
   console.log("DEBUG PR INFO", {
+    author,
     pullNumber,
     draft,
     baseRef,
@@ -71,6 +80,13 @@ exports.action = async function action() {
   console.log("DEBUG COMMENTS", comments);
   const hasRequestedReview = getHasRequestedReview(comments);
   console.log("DEBUG HAS REQUESTED REVIEW", hasRequestedReview);
+
+  if (author === "ms-bot") {
+    console.log(
+      `Not checking PR ${pullNumber} that has been created by ms-bot`
+    );
+    return;
+  }
 
   if (["main", "master", "preprod", "prod"].indexOf(baseRef) === -1) {
     console.log(

@@ -18,6 +18,19 @@ describe("detect if pull request is draft", () => {
   });
 });
 
+describe("author", () => {
+  jest.mock("./lib/actions/octokit");
+
+  const { getPullAuthor } = require("./action");
+  it("should return author", async () => {
+    expect(
+      getPullAuthor({
+        user: { login: "foo" },
+      })
+    ).toBe("foo");
+  });
+});
+
 describe("pull number", () => {
   jest.mock("./lib/actions/octokit");
 
