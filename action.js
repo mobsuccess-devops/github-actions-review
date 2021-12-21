@@ -105,11 +105,14 @@ async function actionIssue() {
     { owner, repo, issue_number: issueNumber }
   );
   const reviewWorkflows = workflowRuns.filter(
-    ({ name }) => name === "Review Requested"
+    ({ name, event, pull_requests: pullRequests }) =>
+      name === "Review Requested" &&
+      event === "pull_request" &&
+      pullRequests.some(({ number }) => number === issueNumber)
   );
   if (!reviewWorkflows.length) {
     console.log(
-      "Review Requested workflow has not yet been run on this repository, bailing out"
+      "Review Requested workflow has not yet been run on this repository for this pull request, bailing out"
     );
     return;
   }
