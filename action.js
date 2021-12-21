@@ -128,7 +128,7 @@ async function actionIssue() {
     "DEBUG SORTED RUNS",
     reviewWorkflows.map(({ run_started_at }) => run_started_at)
   );
-  const latestRun = workflowRuns[0];
+  const latestRun = reviewWorkflows[0];
   console.log("DEBUG LATEST RUN", latestRun);
 }
 
