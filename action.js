@@ -3,12 +3,34 @@ const getOctokit = require("./lib/actions/octokit");
 
 const octokit = getOctokit();
 
-exports.getActionParameters = function getActionParameters() {
-  const pullRequest = github.context.payload.pull_request;
-  return {
-    pullRequest,
-  };
-};
+async function getActionParameters() {
+  console.log("Debug context", github.context);
+  if (github.context && github.context.issue && github.context.issue.number) {
+    // this is a issue comment
+    const {
+      number: issueNumber,
+      repository: {
+        owner: { login: owner },
+        name: repo,
+      },
+    } = github.context.issue;
+    console.log(`Getting PR from issue ${issueNumber} for ${owner}/${repo}`);
+    const pullRequest = await octokit.rest.pulls.get({
+      owner,
+      repo,
+      pull_number: issueNumber,
+    });
+    console.log("Got pull request", pullRequest);
+    return { pullRequest };
+  } else {
+    // this is a PR event
+    const pullRequest = github.context.payload.pull_request;
+    console.log("Getting PR from context");
+    return {
+      pullRequest,
+    };
+  }
+}
 
 const getPullAuthor = (exports.getPullAuthor = (pullRequest) => {
   const {
@@ -56,7 +78,7 @@ const getHasRequestedReview = (exports.getHasRequestedReview = (comments) =>
 
 exports.action = async function action() {
   console.info(`Calling action ${action}`);
-  const { pullRequest } = exports.getActionParameters();
+  const { pullRequest } = await getActionParameters();
   console.log("DEBUG PR", pullRequest);
 
   const author = getPullAuthor(pullRequest);

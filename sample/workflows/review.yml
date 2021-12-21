@@ -19,6 +19,10 @@ on:
       - edited
       - dismissed
 
+  issue_comment:
+    types:
+      - created
+
 jobs:
   Review:
     runs-on: ubuntu-latest
