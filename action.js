@@ -104,7 +104,29 @@ async function actionIssue() {
     "GET /repos/{owner}/{repo}/actions/runs",
     { owner, repo, issue_number: issueNumber }
   );
-  console.log("DEBUG RUNS", workflowRuns);
+  const reviewWorkflows = workflowRuns.filter(
+    ({ name }) => name === "Review Requested"
+  );
+  if (!reviewWorkflows.length) {
+    console.log(
+      "Review Requested workflow has not yet been run on this repository, bailing out"
+    );
+    return;
+  }
+  reviewWorkflows.sort(
+    ({ run_started_at: runStartedAtA }, { run_started_at: runStartedAtB }) =>
+      runStartedAtA >= runStartedAtB
+        ? -1
+        : runStartedAtA < runStartedAtB
+        ? 1
+        : 0
+  );
+  console.log(
+    "DEBUG SORTED RUNS",
+    reviewWorkflows.map(({ run_started_at }) => run_started_at)
+  );
+  const latestRun = workflowRuns[0];
+  console.log("DEBUG LATEST RUN", latestRun);
 }
 
 async function actionPullRequest() {
