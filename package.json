@@ -1,0 +1,31 @@
+{
+  "name": "github-actions-review",
+  "version": "1.0.0",
+  "description": "Action to integrate git with review",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest --coverage",
+    "prettier": "prettier --check .",
+    "eslint": "eslint ."
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mobsuccess-devops/github-actions-review"
+  },
+  "keywords": [
+    "github-actions",
+    "review",
+    "git"
+  ],
+  "author": "Christopher Allène",
+  "license": "UNLICENSED",
+  "dependencies": {
+    "@actions/core": "^1.2.6",
+    "@actions/github": "^4.0.0"
+  },
+  "devDependencies": {
+    "eslint": "^7.22.0",
+    "jest": "^26.6.3",
+    "prettier": "2.2.1"
+  }
+}

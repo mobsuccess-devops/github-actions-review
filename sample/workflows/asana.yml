@@ -1,0 +1,27 @@
+name: Review Requested
+
+on:
+  pull_request:
+    types:
+      - assigned
+      - unassigned
+      - review_requested
+      - review_request_removed
+      - opened
+      - synchronize
+      - edited
+
+  pull_request_review:
+    types:
+      - submitted
+      - edited
+      - dismissed
+
+jobs:
+  Review:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - uses: mobsuccess-devops/github-actions-review@master
+        with:
+          github-token: ${{ github.token }}

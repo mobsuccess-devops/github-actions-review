@@ -1,0 +1,12 @@
+name: "Review Github Actions"
+description: "Review Github Actions"
+inputs:
+  github-token:
+    description: "your github auth token"
+    required: false
+branding:
+  icon: "chevron-right"
+  color: "gray-dark"
+runs:
+  using: "node12"
+  main: "index.js"
