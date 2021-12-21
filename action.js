@@ -28,7 +28,7 @@ async function getActionParameters() {
       })
     ).data;
     console.log("Got pull request", pullRequest);
-    return { pullRequest };
+    return { pullRequest, owner, repo, issueNumber };
   } else {
     // this is a PR event
     console.log("Getting PR from context");
@@ -84,7 +84,31 @@ const getHasRequestedReview = (exports.getHasRequestedReview = (comments) =>
   ));
 
 exports.action = async function action() {
-  console.info(`Calling action`);
+  if (
+    github.context &&
+    github.context.payload &&
+    github.context.payload.issue &&
+    github.context.payload.issue.number
+  ) {
+    return await actionIssue();
+  } else {
+    return await actionPullRequest();
+  }
+};
+
+async function actionIssue() {
+  console.info(`Calling action on issue`);
+  const { owner, repo, issueNumber, pullRequest } = await getActionParameters();
+
+  const workflowRuns = await octokit.paginate(
+    "GET /repos/{owner}/{repo}/actions/runs",
+    { owner, repo, issue_number: issueNumber }
+  );
+  console.log("DEBUG RUNS", workflowRuns);
+}
+
+async function actionPullRequest() {
+  console.info(`Calling action on pull_request`);
   const { pullRequest } = await getActionParameters();
 
   const author = getPullAuthor(pullRequest);
@@ -137,4 +161,4 @@ exports.action = async function action() {
   throw new Error(
     `PR ${pullNumber} should have its review requested in #mobsuccess-review-requested`
   );
-};
+}
