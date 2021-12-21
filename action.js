@@ -5,16 +5,22 @@ const octokit = getOctokit();
 
 async function getActionParameters() {
   console.log("Debug context", github.context);
-  if (github.context && github.context.issue && github.context.issue.number) {
+  if (
+    github.context &&
+    github.context.payload &&
+    github.context.payload.issue &&
+    github.context.payload.issue.number
+  ) {
     // this is a issue comment
+    console.log(`Getting PR from issue`);
     const {
       number: issueNumber,
       repository: {
         owner: { login: owner },
         name: repo,
       },
-    } = github.context.issue;
-    console.log(`Getting PR from issue ${issueNumber} for ${owner}/${repo}`);
+    } = github.context.payload.issue;
+    console.log(`Found issue ${issueNumber} for ${owner}/${repo}`);
     const pullRequest = await octokit.rest.pulls.get({
       owner,
       repo,
@@ -24,8 +30,8 @@ async function getActionParameters() {
     return { pullRequest };
   } else {
     // this is a PR event
-    const pullRequest = github.context.payload.pull_request;
     console.log("Getting PR from context");
+    const pullRequest = github.context.payload.pull_request;
     return {
       pullRequest,
     };
