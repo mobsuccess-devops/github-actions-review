@@ -14,12 +14,12 @@ async function getActionParameters() {
     // this is a issue comment
     console.log(`Getting PR from issue`);
     const {
-      number: issueNumber,
+      issue: { number: issueNumber },
       repository: {
         owner: { login: owner },
         name: repo,
       },
-    } = github.context.payload.issue;
+    } = github.context.payload;
     console.log(`Found issue ${issueNumber} for ${owner}/${repo}`);
     const pullRequest = await octokit.rest.pulls.get({
       owner,
