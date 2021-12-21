@@ -14,21 +14,14 @@ async function getActionParameters() {
     console.log(`Getting PR from issue`);
     const {
       issue: { number: issueNumber },
+      comment,
       repository: {
         owner: { login: owner },
         name: repo,
       },
     } = github.context.payload;
     console.log(`Found issue ${issueNumber} for ${owner}/${repo}`);
-    const pullRequest = (
-      await octokit.pulls.get({
-        owner,
-        repo,
-        pull_number: issueNumber,
-      })
-    ).data;
-    console.log("Got pull request", pullRequest);
-    return { pullRequest, owner, repo, issueNumber };
+    return { comment, owner, repo, issueNumber };
   } else {
     // this is a PR event
     console.log("Getting PR from context");
@@ -98,9 +91,12 @@ exports.action = async function action() {
 
 async function actionIssue() {
   console.info(`Calling action on issue`);
-  console.log(github.context);
-  return;
-  const { owner, repo, issueNumber, pullRequest } = await getActionParameters();
+  const { owner, repo, issueNumber, comment } = await getActionParameters();
+
+  if (!getHasRequestedReview([comment])) {
+    console.log("This comment is not a message requesting review, ignoring");
+    return;
+  }
 
   const workflowRuns = await octokit.paginate(
     "GET /repos/{owner}/{repo}/actions/runs",
