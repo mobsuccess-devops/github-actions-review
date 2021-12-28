@@ -89,6 +89,16 @@ exports.action = async function action() {
   }
 };
 
+async function getPull({ org, repoName, pullNumber }) {
+  return (
+    await octokit.rest.pulls.get({
+      owner: org,
+      repo: repoName,
+      pull_number: pullNumber,
+    })
+  ).data;
+}
+
 async function actionIssue() {
   console.info(`Calling action on issue`);
   const { owner, repo, issueNumber, comment } = await getActionParameters();
@@ -98,9 +108,18 @@ async function actionIssue() {
     return;
   }
 
+  const pull = await getPull({
+    org: owner,
+    repoName: repo,
+    pullNumber: issueNumber,
+  });
+  const {
+    head: { ref: headRef },
+  } = pull;
+
   const workflowRuns = await octokit.paginate(
     "GET /repos/{owner}/{repo}/actions/runs",
-    { owner, repo, issue_number: issueNumber }
+    { owner, repo, branch: headRef }
   );
   const reviewWorkflows = workflowRuns.filter(
     ({ name, event, pull_requests: pullRequests }) =>
