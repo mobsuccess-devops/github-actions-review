@@ -171,14 +171,12 @@ async function actionPullRequest() {
   );
   const hasRequestedReview = getHasRequestedReview(comments);
 
-  if (author === "ms-bot") {
+  if (author === "ms-bot" || author === "dependabot[bot]") {
     console.log(
-      `Not checking PR ${pullNumber} that has been created by ms-bot`
+      `Not checking PR ${pullNumber} that has been created by ${author}`
     );
     return;
   }
-
-  console.log(`Checking PR ${pullNumber} created by ${author}`);
 
   if (["main", "master", "preprod", "prod"].indexOf(baseRef) === -1) {
     console.log(
