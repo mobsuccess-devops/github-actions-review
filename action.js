@@ -178,6 +178,8 @@ async function actionPullRequest() {
     return;
   }
 
+  console.log(`Checking PR ${pullNumber} created by ${author}`);
+
   if (["main", "master", "preprod", "prod"].indexOf(baseRef) === -1) {
     console.log(
       `Not checking PR ${pullNumber} based on “${baseRef}”, which is an unprotected branch`
