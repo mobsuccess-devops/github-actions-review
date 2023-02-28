@@ -32,7 +32,6 @@ async function getActionParameters() {
   } else if (github.context.payload.merge_group) {
     // this is a merge group event
     const { merge_group: mergeGroup } = github.context.payload;
-    console.log("coucou mergeGroup", mergeGroup);
     return {
       mergeGroup,
     };
@@ -92,8 +91,10 @@ exports.action = async function action() {
     github.context.payload.issue.number
   ) {
     return await actionIssue();
-  } else {
+  } else if (github.context.payload.pull_request) {
     return await actionPullRequest();
+  } else {
+    console.log("Not an issue neither a pull request, ignoring");
   }
 };
 
