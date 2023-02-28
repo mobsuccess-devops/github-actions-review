@@ -22,14 +22,22 @@ async function getActionParameters() {
     } = github.context.payload;
     console.log(`Found issue ${issueNumber} for ${owner}/${repo}`);
     return { comment, owner, repo, issueNumber };
-  } else {
+  } else if (github.context.payload.pull_request) {
     // this is a PR event
     console.log("Getting PR from context");
     const pullRequest = github.context.payload.pull_request;
     return {
       pullRequest,
     };
+  } else if (github.context.payload.merge_group) {
+    // this is a merge group event
+    const { merge_group: mergeGroup } = github.context.payload;
+    console.log("coucou mergeGroup", mergeGroup);
+    return {
+      mergeGroup,
+    };
   }
+  return {};
 }
 
 const getPullAuthor = (exports.getPullAuthor = (pullRequest) => {
