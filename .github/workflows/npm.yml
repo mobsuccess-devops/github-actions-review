@@ -11,14 +11,14 @@ name: NPM
 jobs:
   packagejsonlint:
     name: PackageJsonLint
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-24.04
     timeout-minutes: 1
     steps:
       - uses: actions/checkout@v2
       - uses: mobsuccess-devops/github-actions-packagejsonlint@master
   prettier:
     name: Prettier
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-24.04
     timeout-minutes: 7
     steps:
       - uses: actions/checkout@v2
@@ -42,7 +42,7 @@ jobs:
         working-directory: .
   eslint:
     name: Eslint
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-24.04
     timeout-minutes: 7
     steps:
       - uses: actions/checkout@v2
@@ -66,7 +66,7 @@ jobs:
         working-directory: .
   test:
     name: Test
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-24.04
     timeout-minutes: 7
     steps:
       - uses: actions/checkout@v2
